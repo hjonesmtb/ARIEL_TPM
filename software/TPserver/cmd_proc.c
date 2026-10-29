@@ -133,29 +133,29 @@ char cmd[50],*sdp,*chp;
         if ( strcmp(cmd,"TRIP:TH7")== 0 ) {writeReg(VR_BASE+TRIP_TH7,invalue);return 0;}
         if ( strcmp(cmd,"TRIP:TH7?")== 0 ) {*value_back = readReg(VR_BASE+TRIP_TH7);return 1;}
 
-//        if ( strcmp(cmd,"TRIP:TH8")== 0 ) {writeReg(VR_BASE+TRIP_TH8,invalue);return 0;}
-//        if ( strcmp(cmd,"TRIP:TH8?")== 0 ) {*value_back = readReg(VR_BASE+TRIP_TH8);return 1;}
-//
-//        if ( strcmp(cmd,"TRIP:TH9")== 0 ) {writeReg(VR_BASE+TRIP_TH9,invalue);return 0;}
-//        if ( strcmp(cmd,"TRIP:TH9?")== 0 ) {*value_back = readReg(VR_BASE+TRIP_TH9);return 1;}
-//
-//        if ( strcmp(cmd,"TRIP:TH10")== 0 ) {writeReg(VR_BASE+TRIP_TH10,invalue);return 0;}
-//        if ( strcmp(cmd,"TRIP:TH10?")== 0 ) {*value_back = readReg(VR_BASE+TRIP_TH10);return 1;}
-//
-//        if ( strcmp(cmd,"TRIP:TH11")== 0 ) {writeReg(VR_BASE+TRIP_TH11,invalue);return 0;}
-//        if ( strcmp(cmd,"TRIP:TH11?")== 0 ) {*value_back = readReg(VR_BASE+TRIP_TH11);return 1;}
-//
-//        if ( strcmp(cmd,"TRIP:TH12")== 0 ) {writeReg(VR_BASE+TRIP_TH12,invalue);return 0;}
-//        if ( strcmp(cmd,"TRIP:TH12?")== 0 ) {*value_back = readReg(VR_BASE+TRIP_TH12);return 1;}
-//
-//        if ( strcmp(cmd,"TRIP:TH13")== 0 ) {writeReg(VR_BASE+TRIP_TH13,invalue);return 0;}
-//        if ( strcmp(cmd,"TRIP:TH13?")== 0 ) {*value_back = readReg(VR_BASE+TRIP_TH13);return 1;}
-//
-//        if ( strcmp(cmd,"TRIP:TH14")== 0 ) {writeReg(VR_BASE+TRIP_TH14,invalue);return 0;}
-//        if ( strcmp(cmd,"TRIP:TH14?")== 0 ) {*value_back = readReg(VR_BASE+TRIP_TH14);return 1;}
-//
-//        if ( strcmp(cmd,"TRIP:TH15")== 0 ) {writeReg(VR_BASE+TRIP_TH15,invalue);return 0;}
-//        if ( strcmp(cmd,"TRIP:TH15?")== 0 ) {*value_back = readReg(VR_BASE+TRIP_TH15);return 1;}
+        if ( strcmp(cmd,"TRIP:TH8")== 0 ) {writeReg(VR_BASE+TRIP_TH8,invalue);return 0;}
+        if ( strcmp(cmd,"TRIP:TH8?")== 0 ) {*value_back = readReg(VR_BASE+TRIP_TH8);return 1;}
+
+        if ( strcmp(cmd,"TRIP:TH9")== 0 ) {writeReg(VR_BASE+TRIP_TH9,invalue);return 0;}
+        if ( strcmp(cmd,"TRIP:TH9?")== 0 ) {*value_back = readReg(VR_BASE+TRIP_TH9);return 1;}
+
+        if ( strcmp(cmd,"TRIP:TH10")== 0 ) {writeReg(VR_BASE+TRIP_TH10,invalue);return 0;}
+        if ( strcmp(cmd,"TRIP:TH10?")== 0 ) {*value_back = readReg(VR_BASE+TRIP_TH10);return 1;}
+
+        if ( strcmp(cmd,"TRIP:TH11")== 0 ) {writeReg(VR_BASE+TRIP_TH11,invalue);return 0;}
+        if ( strcmp(cmd,"TRIP:TH11?")== 0 ) {*value_back = readReg(VR_BASE+TRIP_TH11);return 1;}
+
+        if ( strcmp(cmd,"TRIP:TH12")== 0 ) {writeReg(VR_BASE+TRIP_TH12,invalue);return 0;}
+        if ( strcmp(cmd,"TRIP:TH12?")== 0 ) {*value_back = readReg(VR_BASE+TRIP_TH12);return 1;}
+
+        if ( strcmp(cmd,"TRIP:TH13")== 0 ) {writeReg(VR_BASE+TRIP_TH13,invalue);return 0;}
+        if ( strcmp(cmd,"TRIP:TH13?")== 0 ) {*value_back = readReg(VR_BASE+TRIP_TH13);return 1;}
+
+        if ( strcmp(cmd,"TRIP:TH14")== 0 ) {writeReg(VR_BASE+TRIP_TH14,invalue);return 0;}
+        if ( strcmp(cmd,"TRIP:TH14?")== 0 ) {*value_back = readReg(VR_BASE+TRIP_TH14);return 1;}
+
+        if ( strcmp(cmd,"TRIP:TH15")== 0 ) {writeReg(VR_BASE+TRIP_TH15,invalue);return 0;}
+        if ( strcmp(cmd,"TRIP:TH15?")== 0 ) {*value_back = readReg(VR_BASE+TRIP_TH15);return 1;}
 
 
 		

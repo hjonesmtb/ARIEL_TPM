@@ -4,7 +4,7 @@ Description=TRIUMF Diagnostics: Target Protect Server
 [Service]
 Type=simple
 WorkingDirectory=/home/root
-ExecStart=/home/root/TPServer 22044
+ExecStart=/home/root/TPServer 22040
 
 [Install]
 WantedBy=multi-user.target
