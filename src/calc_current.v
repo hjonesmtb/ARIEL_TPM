@@ -39,15 +39,15 @@ parameter  	SF_WIDTH = 32;
 
 //parameter  	KV = 16'd12288;
 
-wire signed [31:0]  	K1 = is_aete? 16'd15 : 16'd150;   // gain = 100 nA/V, =--> 5V*100,000/32768 (pA) 
-wire signed [31:0]  	K2 = is_aete? 16'd153 : 16'd1530;   // gain = 1000
-wire signed [31:0]  	K3 = is_aete? 16'd1526 : 16'd15260;  // gain = 10000
-wire signed [31:0]  	K4 = is_aete? 16'd15260 : 16'd152600; // gain = 100000 
+wire signed [31:0]  	K1 = 16'd15;   // gain = 100 nA/V, =--> 5V*100,000/32768 (pA) 
+wire signed [31:0]  	K2 = 16'd153;   // gain = 1000
+wire signed [31:0]  	K3 = 16'd1526;  // gain = 10000
+wire signed [31:0]  	K4 = 16'd15260; // gain = 100000 
 
 parameter  	KV = 16'd5000; // 5*1000, we will need to divide 0x8000=2**15 later ,i.e. right shift 15 bits.
 
 wire signed [31:0] I_value[7:0];
-reg signed [15:0] dataa_sig[7:0];
+reg  signed [15:0] dataa_sig[7:0];
 wire signed [15:0] data_avg1[7:0];
 wire signed [15:0] data_aptw[7:0];
 wire signed [15:0] data_aete[7:0];
@@ -157,7 +157,7 @@ for (i = 0; i < 8 ; i = i + 1)
 		 .d_clk           ()
 		);	
 		
-		assign I_avg[i] = I_value[i];
+		assign I_avg[i] = is_aete? I_value[i]: (I_value[i] >>> 4) + (I_value[i] >>> 5) + (I_value[i] >>> 7)  ; // divide by 10 for APTW
 	   assign data_filt[i] = is_aete? data_aete[i] : data_aptw[i];
 		
 		

@@ -91,6 +91,7 @@ module DE10_NANO_SoC_GHRD(
 	 output GPIO_1_3,  //LED_COMM
 	 output GPIO_1_5,  //LED_FPGA
 	 output GPIO_1_2,  //LED_Fault
+	 output GPIO_1_32,  //TRIP output
 		 
 	 //i2c eeprom
 	 output GPIO_1_6, //SCL
@@ -105,10 +106,10 @@ module DE10_NANO_SoC_GHRD(
 	 input  GPIO_1_14, //Test 4 = Digital In 4
 	 input  GPIO_1_15, //Test 5 = Digital In 5
 	 
-	 output GPIO_1_16, //Test 6 = OP_TX
-	 input  GPIO_1_17, //Test 7 = OP_RC
+	 output GPIO_1_17, //Test 6 = OP_TX
+	 input  GPIO_1_18, //Test 7 = OP_RC
  	 
-	 inout  GPIO_1_18, //Test 8 = DHT11 Sig
+	 //inout  GPIO_1_18, //Test 8 = DHT11 Sig
 	 
 
    
@@ -164,8 +165,8 @@ module DE10_NANO_SoC_GHRD(
 );
 
 //parameter FPGA_VERSION_NO = 32'd0020200908; //nn_yyyy_mm_dd: AETE nn=00;
-parameter FPGA_VERSION_NO = 32'd20260818; // d20260721
-parameter IS_AETE = 1; // select between AETE (1) and APTW (0)
+parameter FPGA_VERSION_NO = 32'd20261029; // d20260721
+parameter IS_AETE = 0; // select between AETE (1) and APTW (0)
 
 `include "src/param.v"
 
@@ -187,22 +188,22 @@ parameter IS_AETE = 1; // select between AETE (1) and APTW (0)
 `define 	TRIP_TH6  {configuration[23],configuration[22]}
 `define 	TRIP_TH7  {configuration[25],configuration[24]}
 
-//`define 	TRIP_TH8  {configuration[27],configuration[26]}
-//`define 	TRIP_TH9  {configuration[29],configuration[28]}
-//`define 	TRIP_TH10  {configuration[31],configuration[30]}
-//`define 	TRIP_TH11  {configuration[33],configuration[32]}
-//`define 	TRIP_TH12  {configuration[35],configuration[34]}
-//`define 	TRIP_TH13  {configuration[37],configuration[36]}
-//`define 	TRIP_TH14  {configuration[39],configuration[38]}
-//`define 	TRIP_TH15  {configuration[41],configuration[40]}
+`define 	TRIP_TH8  {configuration[27],configuration[26]}
+`define 	TRIP_TH9  {configuration[29],configuration[28]}
+`define 	TRIP_TH10  {configuration[31],configuration[30]}
+`define 	TRIP_TH11  {configuration[33],configuration[32]}
+`define 	TRIP_TH12  {configuration[35],configuration[34]}
+`define 	TRIP_TH13  {configuration[37],configuration[36]}
+`define 	TRIP_TH14  {configuration[39],configuration[38]}
+`define 	TRIP_TH15  {configuration[41],configuration[40]}
 
-`define 	AVG_SHIFT  {configuration[27],configuration[26]}
+//`define 	AVG_SHIFT  {configuration[27],configuration[26]}
 
-wire signed [ADC_DATA_WIDTH-1:0] trip_thresh[7:0];
+wire signed [ADC_DATA_WIDTH-1:0] trip_thresh[15:0];
  
 genvar i;
 generate 
-for (i = 0; i < 15 ; i = i + 2) 
+for (i = 0; i < 31 ; i = i + 2) 
 	begin: thresh_assignment
 		assign trip_thresh[i>>1] = {configuration[i+11],configuration[i+10]};
   	end
@@ -263,6 +264,7 @@ assign LED_Fault = interlock_status[0]; // tripped
 	assign GPIO_1_3 = LED_COMM;  //LED_COMM, indicating communication activity, not implemented yet.
 	assign GPIO_1_5 = LED_FPGA;  //LED_FPGA
 	assign GPIO_1_2 = LED_Fault;  //LED_Fault
+	assign GPIO_1_32 = LED_Fault; // TRIP output
 	
 	assign d_in[5] = ~GPIO_1_10; //digital input 6
 	assign d_in[4] = ~GPIO_1_11; 
@@ -271,9 +273,9 @@ assign LED_Fault = interlock_status[0]; // tripped
 	assign d_in[1] = ~GPIO_1_14; 
 	assign d_in[0] = ~GPIO_1_15; //digital input 1
 	
-	wire  OPT_out; //fiber optical signal output 
-	assign GPIO_1_16 = OPT_out;
-	wire  OPT_in  = GPIO_1_17; //fiber optical signal input
+	wire  OPT_out; //fiber optical signal output (TX)
+	assign GPIO_1_17 = OPT_out;
+	wire  OPT_in  = GPIO_1_18; //fiber optical signal input (RX)
 	
 //GPIO_1_18 assigned in module instance directly
 //GPIO_1_6,8 assigned in module instance directly
@@ -397,6 +399,7 @@ AD4001 adc_interface_1
 	);
 	
 AD4001 adc_interface_2
+
 	(  .run(1'b1),
 		.miso(ADC_MISO[2]),
 		//.mosi(),
@@ -552,8 +555,8 @@ parameter integer 	TRIP_TH5_ADDR = 35;
 parameter integer 	TRIP_TH6_ADDR = 36;
 parameter integer 	TRIP_TH7_ADDR = 37;
 
-parameter integer 	AVG_SHIFT_ADDR = 38;
-//parameter integer 	TRIP_TH8_ADDR = 38;
+//parameter integer 	AVG_SHIFT_ADDR = 38;
+parameter integer 	TRIP_TH8_ADDR = 38;
 parameter integer 	TRIP_TH9_ADDR = 39;
 parameter integer 	TRIP_TH10_ADDR = 40;
 parameter integer 	TRIP_TH11_ADDR = 41;
@@ -833,53 +836,53 @@ always@(posedge SYS_CLK)
 	if ((avalon_addr == TRIP_TH7_ADDR) & (avalon_read_o == 1) ) 
 			dout <= {16'b0,`TRIP_TH7};  
 
-//   /*   Write/Read to Thresh 8  */
-//	if ((avalon_addr == AVG_SHIFT_ADDR) & (avalon_write_o == 1) ) 
-//			`AVG_SHIFT <= avalon_writedata[15:0]; 
-//	if ((avalon_addr == AVG_SHIFT_ADDR) & (avalon_read_o == 1) ) 
-//			dout <= {16'b0,`AVG_SHIFT};  
-//
-//   /*   Write/Read to Thresh 9  */
-//	if ((avalon_addr == TRIP_TH9_ADDR) & (avalon_write_o == 1) ) 
-//			`TRIP_TH9 <= avalon_writedata[15:0]; 
-//	if ((avalon_addr == TRIP_TH9_ADDR) & (avalon_read_o == 1) ) 
-//			dout <= {16'b0,`TRIP_TH9};  
-//
-//   /*   Write/Read to Thresh 10  */
-//	if ((avalon_addr == TRIP_TH10_ADDR) & (avalon_write_o == 1) ) 
-//			`TRIP_TH10 <= avalon_writedata[15:0]; 
-//	if ((avalon_addr == TRIP_TH10_ADDR) & (avalon_read_o == 1) ) 
-//			dout <= {16'b0,`TRIP_TH10};  
-//
-//   /*   Write/Read to Thresh 11  */
-//	if ((avalon_addr == TRIP_TH11_ADDR) & (avalon_write_o == 1) ) 
-//			`TRIP_TH11 <= avalon_writedata[15:0]; 
-//	if ((avalon_addr == TRIP_TH11_ADDR) & (avalon_read_o == 1) ) 
-//			dout <= {16'b0,`TRIP_TH11};  
-//
-//   /*   Write/Read to Thresh 12  */
-//	if ((avalon_addr == TRIP_TH12_ADDR) & (avalon_write_o == 1) ) 
-//			`TRIP_TH12 <= avalon_writedata[15:0]; 
-//	if ((avalon_addr == TRIP_TH12_ADDR) & (avalon_read_o == 1) ) 
-//			dout <= {16'b0,`TRIP_TH12};  
-//
-//   /*   Write/Read to Thresh 13  */
-//	if ((avalon_addr == TRIP_TH13_ADDR) & (avalon_write_o == 1) ) 
-//			`TRIP_TH13 <= avalon_writedata[15:0]; 
-//	if ((avalon_addr == TRIP_TH13_ADDR) & (avalon_read_o == 1) ) 
-//			dout <= {16'b0,`TRIP_TH13};  
-//
-//   /*   Write/Read to Thresh 14  */
-//	if ((avalon_addr == TRIP_TH14_ADDR) & (avalon_write_o == 1) ) 
-//			`TRIP_TH14 <= avalon_writedata[15:0]; 
-//	if ((avalon_addr == TRIP_TH14_ADDR) & (avalon_read_o == 1) ) 
-//			dout <= {16'b0,`TRIP_TH14};  
-//
-//   /*   Write/Read to Thresh 15  */
-//	if ((avalon_addr == TRIP_TH15_ADDR) & (avalon_write_o == 1) ) 
-//			`TRIP_TH15 <= avalon_writedata[15:0]; 
-//	if ((avalon_addr == TRIP_TH15_ADDR) & (avalon_read_o == 1) ) 
-//			dout <= {16'b0,`TRIP_TH15};  			
+   /*   Write/Read to Thresh 8  */
+	if ((avalon_addr == TRIP_TH8_ADDR) & (avalon_write_o == 1) ) 
+			`TRIP_TH8 <= avalon_writedata[15:0]; 
+	if ((avalon_addr == TRIP_TH8_ADDR) & (avalon_read_o == 1) ) 
+			dout <= {16'b0,`TRIP_TH8};  
+
+   /*   Write/Read to Thresh 9  */
+	if ((avalon_addr == TRIP_TH9_ADDR) & (avalon_write_o == 1) ) 
+			`TRIP_TH9 <= avalon_writedata[15:0]; 
+	if ((avalon_addr == TRIP_TH9_ADDR) & (avalon_read_o == 1) ) 
+			dout <= {16'b0,`TRIP_TH9};  
+
+   /*   Write/Read to Thresh 10  */
+	if ((avalon_addr == TRIP_TH10_ADDR) & (avalon_write_o == 1) ) 
+			`TRIP_TH10 <= avalon_writedata[15:0]; 
+	if ((avalon_addr == TRIP_TH10_ADDR) & (avalon_read_o == 1) ) 
+			dout <= {16'b0,`TRIP_TH10};  
+
+   /*   Write/Read to Thresh 11  */
+	if ((avalon_addr == TRIP_TH11_ADDR) & (avalon_write_o == 1) ) 
+			`TRIP_TH11 <= avalon_writedata[15:0]; 
+	if ((avalon_addr == TRIP_TH11_ADDR) & (avalon_read_o == 1) ) 
+			dout <= {16'b0,`TRIP_TH11};  
+
+   /*   Write/Read to Thresh 12  */
+	if ((avalon_addr == TRIP_TH12_ADDR) & (avalon_write_o == 1) ) 
+			`TRIP_TH12 <= avalon_writedata[15:0]; 
+	if ((avalon_addr == TRIP_TH12_ADDR) & (avalon_read_o == 1) ) 
+			dout <= {16'b0,`TRIP_TH12};  
+
+   /*   Write/Read to Thresh 13  */
+	if ((avalon_addr == TRIP_TH13_ADDR) & (avalon_write_o == 1) ) 
+			`TRIP_TH13 <= avalon_writedata[15:0]; 
+	if ((avalon_addr == TRIP_TH13_ADDR) & (avalon_read_o == 1) ) 
+			dout <= {16'b0,`TRIP_TH13};  
+
+   /*   Write/Read to Thresh 14  */
+	if ((avalon_addr == TRIP_TH14_ADDR) & (avalon_write_o == 1) ) 
+			`TRIP_TH14 <= avalon_writedata[15:0]; 
+	if ((avalon_addr == TRIP_TH14_ADDR) & (avalon_read_o == 1) ) 
+			dout <= {16'b0,`TRIP_TH14};  
+
+   /*   Write/Read to Thresh 15  */
+	if ((avalon_addr == TRIP_TH15_ADDR) & (avalon_write_o == 1) ) 
+			`TRIP_TH15 <= avalon_writedata[15:0]; 
+	if ((avalon_addr == TRIP_TH15_ADDR) & (avalon_read_o == 1) ) 
+			dout <= {16'b0,`TRIP_TH15};  			
 end
 		
 		
@@ -997,7 +1000,7 @@ calc_current cal_i_ins(
 					0:if(processing_done && !sfifo_half_full)
 						begin  sFIFO_wr<= 1; sfifo_data_in <= PID; p_state <= 1; end
 					1: begin sfifo_data_in <= {`CON_REG_H8,`CON_REG_L8,`MASK_REG_H8,`MASK_REG_L8}; p_state <= 2; end
-					2: begin sfifo_data_in <= {humi,temp}; p_state <= 3; end
+					2: begin sfifo_data_in <= 0; p_state <= 3; end
 					3: begin sfifo_data_in <= interlock_status; p_state <= 4; end			
 					4: begin sfifo_data_in <= {analog_readback[0],analog_readback[1]}; p_state <= 5; end
 					5: begin sfifo_data_in <= {analog_readback[2],analog_readback[3]}; p_state <= 6; end
@@ -1011,10 +1014,10 @@ calc_current cal_i_ins(
 					13: begin sfifo_data_in <= {trip_thresh[2],trip_thresh[3]}; p_state <= 14; end
 					14: begin sfifo_data_in <= {trip_thresh[4],trip_thresh[5]}; p_state <= 15; end
 					15: begin sfifo_data_in <= {trip_thresh[6],trip_thresh[7]}; p_state <= 16; end
-					16: begin sfifo_data_in <= 0; p_state <= 17; end // was trip_thresh[8],trip_thresh[9]
-					17: begin sfifo_data_in <= 0; p_state <= 18; end
-					18: begin sfifo_data_in <= 0; p_state <= 19; end
-					19: begin sfifo_data_in <= 0; p_state <= 20; end // was trip_thresh[14],trip_thresh[15]
+					16: begin sfifo_data_in <= {trip_thresh[8],trip_thresh[9]}; p_state <= 17; end
+					17: begin sfifo_data_in <= {trip_thresh[10],trip_thresh[11]}; p_state <= 18; end
+					18: begin sfifo_data_in <= {trip_thresh[12],trip_thresh[13]}; p_state <= 19; end
+					19: begin sfifo_data_in <= {trip_thresh[14],trip_thresh[15]}; p_state <= 20; end
 					20: begin sfifo_data_in <= Ch_I_value[0]; p_state <= 21; end
 					21: begin sfifo_data_in <= Ch_I_value[1]; p_state <= 22; end
 					22: begin sfifo_data_in <= Ch_I_value[2]; p_state <= 23; end
@@ -1100,16 +1103,17 @@ clockdiv squrewave(
 //	 inout  GPIO_1_18, //Test 8 = DHT11 Sig
 
 
+// REMOVE AFTER TESTING
 
-reg [15:0] temp, humi;
-
-dht11 temp_sensor(
-	.i_clk(SYS_CLK),
-	.i_rst_n(ena_dht),
-	.io_data(GPIO_1_18),
-	.o_temp(temp),
-	.o_humi(humi)
-	);
+//reg [15:0] temp, humi;
+//
+//dht11 temp_sensor(
+//	.i_clk(SYS_CLK),
+//	.i_rst_n(ena_dht),
+//	.io_data(GPIO_1_18),
+//	.o_temp(temp),
+//	.o_humi(humi)
+//	);
 
 
 //========LED ============================
