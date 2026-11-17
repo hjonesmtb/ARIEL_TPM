@@ -165,7 +165,7 @@ module DE10_NANO_SoC_GHRD(
 );
 
 //parameter FPGA_VERSION_NO = 32'd0020200908; //nn_yyyy_mm_dd: AETE nn=00;
-parameter FPGA_VERSION_NO = 32'd20261029; // d20260721
+parameter FPGA_VERSION_NO = 32'd20261117; // d20260721
 parameter IS_AETE = 0; // select between AETE (1) and APTW (0)
 
 `include "src/param.v"
